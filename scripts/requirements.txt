@@ -1,0 +1,4 @@
+faker==36.1.1
+pandas==2.2.3
+neo4j==5.28.1
+python-dateutil==2.8.2

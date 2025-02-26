@@ -1,0 +1,6 @@
+scripts/venv/
+scripts/csv/
+
+
+backend/node_modules/
+backend/.env
