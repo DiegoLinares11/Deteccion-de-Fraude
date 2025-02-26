@@ -188,6 +188,46 @@ for _ in range(800):  # 800 referidos
     })
 df_referred = pd.DataFrame(referred)
 
+# 8. TRUSTS (Customer → Customer)
+trusts = []
+for _ in range(700):  # 700 relaciones de confianza
+    trustor = random.choice(df_customers['customerId'])
+    # Buscar otro cliente que no sea el mismo
+    possible_trustees = df_customers[df_customers['customerId'] != trustor]['customerId'].tolist()
+    if possible_trustees:
+        trustee = random.choice(possible_trustees)
+        trusts.append({
+            "trustorId": trustor,
+            "trusteeId": trustee,
+            "trustLevel": random.randint(1, 5),  # Nivel de confianza entre 1-5
+            "since": fake.date_between(start_date='-5y', end_date='today'),
+            "verificationMethod": random.choice(["biometric", "manual", "document"])
+        })
+df_trusts = pd.DataFrame(trusts)
+
+# 9. SERVICED_BY (Customer → Branch)
+serviced_by = []
+for _ in range(1000):  # 1000 relaciones de servicio
+    serviced_by.append({
+        "customerId": random.choice(df_customers['customerId']),
+        "branchCode": random.choice(df_branches['branchCode']),
+        "serviceLevel": random.choice(["premium", "standard", "basic"]),
+        "since": fake.date_between(start_date='-3y', end_date='today'),
+        "feedbackScore": round(random.uniform(1.0, 5.0), 1)  # Puntaje de 1.0 a 5.0
+    })
+df_serviced_by = pd.DataFrame(serviced_by)
+
+# 10. CONNECTED_VIA (Account → Device)
+connected_via = []
+for _ in range(2000):  # 2000 conexiones cuenta-dispositivo
+    connected_via.append({
+        "accountNumber": random.choice(df_accounts['accountNumber']),
+        "deviceId": random.choice(df_devices['deviceId']),
+        "lastUsed": fake.date_time_this_year(),
+        "frequency": random.randint(1, 100),  # Veces que se usó el dispositivo
+        "isVerified": random.choice([True, False])
+    })
+df_connected_via = pd.DataFrame(connected_via)
 
 # 11. RESIDES_IN (Customer → Location)
 resides_in = []
@@ -234,3 +274,6 @@ df_linked_to.to_csv('csv/linked_to.csv', index=False)
 df_referred.to_csv('csv/referred.csv', index=False)
 df_resides_in.to_csv('csv/resides_in.csv', index=False)
 df_located_in.to_csv('csv/located_in.csv', index=False)
+df_trusts.to_csv('csv/trusts.csv', index=False)
+df_serviced_by.to_csv('csv/serviced_by.csv', index=False)
+df_connected_via.to_csv('csv/connected_via.csv', index=False)
