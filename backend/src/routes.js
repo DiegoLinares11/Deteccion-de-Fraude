@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const router = express.Router();
 const { session } = require('./db');
@@ -14,3 +15,4 @@ router.get('/customers', async (req, res) => {
 });
 
 module.exports = router;
+ */

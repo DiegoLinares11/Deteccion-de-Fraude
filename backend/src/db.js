@@ -1,11 +1,11 @@
-require('dotenv').config();
-const neo4j = require('neo4j-driver');
+// require('dotenv').config();
+// const neo4j = require('neo4j-driver');
 
-const driver = neo4j.driver(
-  process.env.NEO4J_URI,
-  neo4j.auth.basic(process.env.NEO4J_USERNAME, process.env.NEO4J_PASSWORD)
-);
+// const driver = neo4j.driver(
+//   process.env.NEO4J_URI,
+//   neo4j.auth.basic(process.env.NEO4J_USERNAME, process.env.NEO4J_PASSWORD)
+// );
 
-const session = driver.session();
+// const session = driver.session();
 
-module.exports = { driver, session };
+// module.exports = { driver, session };
