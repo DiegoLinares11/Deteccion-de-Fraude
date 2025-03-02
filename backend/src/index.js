@@ -36,7 +36,9 @@ app.get('/', (req, res) => {
         uses: "/api/relations/uses",
         locatedat: "/api/relations/locatedat",
         operateat: "/api/relations/operateat",
-        linkedto: "/api/relations/linkedto",}
+        linkedto: "/api/relations/linkedto",
+        referred: "/api/relations/referred",
+    }
 
     }
   });

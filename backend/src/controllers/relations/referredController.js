@@ -24,7 +24,7 @@ const createReferredRelation = async (req, res) => {
 
     // Verificar si la relación ya existe
     const existingRelation = await session.run(
-      `MATCH (c1:Customer {customerId: $referrerId})-[r:REFERRED]->(c2:Customer {customerId: $referredId})
+      `MATCH (c1:Customer {customerId: $referrerId})-[r:referred]->(c2:Customer {customerId: $referredId})
        RETURN r`,
       { referrerId, referredId }
     );
@@ -36,7 +36,7 @@ const createReferredRelation = async (req, res) => {
     // Crear relación
     const result = await session.run(
       `MATCH (c1:Customer {customerId: $referrerId}), (c2:Customer {customerId: $referredId})
-       CREATE (c1)-[r:REFERRED]->(c2)
+       CREATE (c1)-[r:referred]->(c2)
        SET r.referralCode = $referralCode,
            r.referralDate = datetime(),
            r.bonusAmount = $bonusAmount
@@ -59,7 +59,7 @@ const getReferredRelations = async (req, res) => {
   const session = getSession();
   try {
     const result = await session.run(
-      `MATCH (c1:Customer)-[r:REFERRED]->(c2:Customer)
+      `MATCH (c1:Customer)-[r:referred]->(c2:Customer)
        RETURN 
          c1.customerId AS referrer,
          c2.customerId AS referred,
@@ -91,7 +91,7 @@ const updateReferredBonus = async (req, res) => {
     const { referrerId, referredId, newBonusAmount } = req.body;
     
     const result = await session.run(
-      `MATCH (c1:Customer {customerId: $referrerId})-[r:REFERRED]->(c2:Customer {customerId: $referredId})
+      `MATCH (c1:Customer {customerId: $referrerId})-[r:referred]->(c2:Customer {customerId: $referredId})
        SET r.bonusAmount = $newBonusAmount
        RETURN r`,
       { referrerId, referredId, newBonusAmount: parseFloat(newBonusAmount) }
@@ -116,7 +116,7 @@ const deleteReferredRelation = async (req, res) => {
     const { referrerId, referredId } = req.body;
     
     await session.run(
-      `MATCH (c1:Customer {customerId: $referrerId})-[r:REFERRED]->(c2:Customer {customerId: $referredId})
+      `MATCH (c1:Customer {customerId: $referrerId})-[r:referred]->(c2:Customer {customerId: $referredId})
        DELETE r`,
       { referrerId, referredId }
     );
