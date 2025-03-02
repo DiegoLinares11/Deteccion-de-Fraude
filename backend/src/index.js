@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
         servicedby: "/api/relations/servicedby",
         residesin: "/api/relations/residesin",
         connectedvia: "/api/relations/connectedvia",
-
+        locatedin: "/api/relations/locatedin"
     }
 
     }

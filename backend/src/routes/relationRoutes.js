@@ -13,6 +13,7 @@ const trustRoutes = require('./relations/trustRoutes');
 const servicedByRoutes = require('./relations/servicedByRoutes');
 const connectedViaRoutes = require('./relations/connectedViaRoutes');
 const residesInRoutes = require('./relations/residesInRoutes');
+const locatedInRoutes = require('./relations/locatedInRoutes');
 
 // Asignar rutas base
 router.use('/owns', ownsRoutes);          // /api/relations/owns
@@ -26,5 +27,6 @@ router.use('/trusts', trustRoutes); // /api/relations/trusts
 router.use('/servicedby', servicedByRoutes); // /api/relations/serviced-by
 router.use('/connectedvia', connectedViaRoutes); // /api/relations/connected-via
 router.use('/residesin', residesInRoutes); // /api/relations/resides-in
+router.use('/locatedin', locatedInRoutes); // /api/relations/located-in
 
 module.exports = router;
