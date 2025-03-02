@@ -7,6 +7,7 @@ const customerRoutes = require('./routes/customerRoutes');
 const analyticRoutes = require('./routes/analyticRoutes');
 const accountRoutes = require('./routes/accountRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
+const locationRoutes = require('./routes/locationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,7 +25,8 @@ app.get('/', (req, res) => {
       customers: "/api/customers",
       analytics: "/api/analytics/fraud-rings",
       accounts: "/api/accounts",
-      device: "/api/devices" 
+      device: "/api/devices", 
+      locations: "/api/locations"
     }
   });
 });
@@ -34,6 +36,7 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/analytics', analyticRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/devices', deviceRoutes);
+app.use('/api/locations', locationRoutes);
 
 // Manejador de errores
 app.use((err, req, res, next) => {
