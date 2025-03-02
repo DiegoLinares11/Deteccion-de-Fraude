@@ -8,6 +8,7 @@ const analyticRoutes = require('./routes/analyticRoutes');
 const accountRoutes = require('./routes/accountRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
 const locationRoutes = require('./routes/locationRoutes');
+const branchRoutes = require('./routes/branchRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,7 +27,8 @@ app.get('/', (req, res) => {
       analytics: "/api/analytics/fraud-rings",
       accounts: "/api/accounts",
       device: "/api/devices", 
-      locations: "/api/locations"
+      locations: "/api/locations",
+      branches: "/api/branches"
     }
   });
 });
@@ -37,6 +39,7 @@ app.use('/api/analytics', analyticRoutes);
 app.use('/api/accounts', accountRoutes);
 app.use('/api/devices', deviceRoutes);
 app.use('/api/locations', locationRoutes);
+app.use('/api/branches', branchRoutes);
 
 // Manejador de errores
 app.use((err, req, res, next) => {
