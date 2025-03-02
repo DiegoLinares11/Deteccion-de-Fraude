@@ -1,6 +1,6 @@
 const { getSession } = require('../utils/neo4j');
 
-// ✅ Crear una sucursal
+// Crear una sucursal
 const createBranch = async (req, res) => {
   const session = getSession();
   try {
@@ -34,7 +34,7 @@ const createBranch = async (req, res) => {
   }
 };
 
-// ✅ Obtener todas las sucursales
+// Obtener todas las sucursales
 const getAllBranches = async (req, res) => {
   const session = getSession();
   try {
@@ -50,7 +50,7 @@ const getAllBranches = async (req, res) => {
   }
 };
 
-// ✅ Obtener una sucursal por ID
+// Obtener una sucursal por ID
 const getBranchById = async (req, res) => {
   const session = getSession();
   try {
@@ -71,7 +71,7 @@ const getBranchById = async (req, res) => {
   }
 };
 
-// ✅ Actualizar una sucursal
+// Actualizar una sucursal
 const updateBranch = async (req, res) => {
   const session = getSession();
   try {
@@ -107,7 +107,7 @@ const updateBranch = async (req, res) => {
   }
 };
 
-// ✅ Eliminar una sucursal
+// Eliminar una sucursal
 const deleteBranch = async (req, res) => {
   const session = getSession();
   try {

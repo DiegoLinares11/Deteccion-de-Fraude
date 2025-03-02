@@ -1,6 +1,6 @@
 const { getSession } = require('../utils/neo4j');
 
-// ✅ Crear una cuenta
+// Crear una cuenta
 const createAccount = async (req, res) => {
   const session = getSession();
   try {
@@ -32,7 +32,7 @@ const createAccount = async (req, res) => {
   }
 };
 
-// ✅ Obtener todas las cuentas
+// Obtener todas las cuentas
 const getAllAccounts = async (req, res) => {
   const session = getSession();
   try {
@@ -69,7 +69,7 @@ const getAccountById = async (req, res) => {
   }
 };
 
-// ✅ Actualizar una cuenta
+// Actualizar una cuenta
 const updateAccount = async (req, res) => {
   const session = getSession();
   try {
@@ -102,7 +102,7 @@ const updateAccount = async (req, res) => {
   }
 };
 
-// ✅ Eliminar una cuenta
+// Eliminar una cuenta
 const deleteAccount = async (req, res) => {
   const session = getSession();
   try {

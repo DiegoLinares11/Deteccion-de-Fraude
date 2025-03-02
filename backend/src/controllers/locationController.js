@@ -1,6 +1,6 @@
 const { getSession } = require('../utils/neo4j');
 
-// ✅ Crear una ubicación
+// Crear una ubicación
 const createLocation = async (req, res) => {
   const session = getSession();
   try {
@@ -32,7 +32,7 @@ const createLocation = async (req, res) => {
   }
 };
 
-// ✅ Obtener todas las ubicaciones
+// Obtener todas las ubicaciones
 const getAllLocations = async (req, res) => {
   const session = getSession();
   try {
@@ -48,7 +48,7 @@ const getAllLocations = async (req, res) => {
   }
 };
 
-// ✅ Obtener una ubicación por ID
+// Obtener una ubicación por ID
 const getLocationById = async (req, res) => {
   const session = getSession();
   try {
@@ -69,7 +69,7 @@ const getLocationById = async (req, res) => {
   }
 };
 
-// ✅ Actualizar una ubicación
+// Actualizar una ubicación
 const updateLocation = async (req, res) => {
   const session = getSession();
   try {
@@ -104,7 +104,7 @@ const updateLocation = async (req, res) => {
   }
 };
 
-// ✅ Eliminar una ubicación
+// Eliminar una ubicación
 const deleteLocation = async (req, res) => {
   const session = getSession();
   try {

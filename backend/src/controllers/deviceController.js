@@ -1,6 +1,6 @@
 const { getSession } = require('../utils/neo4j');
 
-// ✅ Crear un dispositivo
+// Crear un dispositivo
 const createDevice = async (req, res) => {
   const session = getSession();
   try {
@@ -31,7 +31,7 @@ const createDevice = async (req, res) => {
   }
 };
 
-// ✅ Obtener todos los dispositivos
+// Obtener todos los dispositivos
 const getAllDevices = async (req, res) => {
   const session = getSession();
   try {
@@ -47,7 +47,7 @@ const getAllDevices = async (req, res) => {
   }
 };
 
-// ✅ Obtener un dispositivo por ID
+// Obtener un dispositivo por ID
 const getDeviceById = async (req, res) => {
   const session = getSession();
   try {
@@ -68,7 +68,7 @@ const getDeviceById = async (req, res) => {
   }
 };
 
-// ✅ Actualizar un dispositivo
+// Actualizar un dispositivo
 const updateDevice = async (req, res) => {
   const session = getSession();
   try {
@@ -102,7 +102,7 @@ const updateDevice = async (req, res) => {
   }
 };
 
-// ✅ Eliminar un dispositivo
+// Eliminar un dispositivo
 const deleteDevice = async (req, res) => {
   const session = getSession();
   try {

@@ -1,6 +1,6 @@
 const { getSession } = require('../utils/neo4j');
 
-// ✅ Crear un cliente
+// Crear un cliente
 const createCustomer = async (req, res) => {
   const session = getSession();
   try {
@@ -11,7 +11,7 @@ const createCustomer = async (req, res) => {
     }
 
     const result = await session.run(
-      `CREATE (c:Customer {
+      `MERGE (c:Customer {
         customerId: randomUUID(),
         firstName: $firstName,
         lastName: $lastName,
@@ -36,7 +36,7 @@ const createCustomer = async (req, res) => {
   }
 };
 
-// ✅ Obtener todos los clientes
+// Obtener todos los clientes
 const getAllCustomers = async (req, res) => {
   const session = getSession();
   try {
@@ -60,7 +60,7 @@ const getAllCustomers = async (req, res) => {
   }
 };
 
-// ✅ Obtener un cliente por ID
+// Obtener un cliente por ID
 const getCustomerById = async (req, res) => {
   const session = getSession();
   try {
@@ -85,7 +85,7 @@ const getCustomerById = async (req, res) => {
   }
 };
 
-// ✅ Actualizar un cliente
+// Actualizar un cliente
 const updateCustomer = async (req, res) => {
   const session = getSession();
   try {
@@ -118,7 +118,7 @@ const updateCustomer = async (req, res) => {
   }
 };
 
-// ✅ Eliminar un cliente
+// Eliminar un cliente
 const deleteCustomer = async (req, res) => {
   const session = getSession();
   try {
