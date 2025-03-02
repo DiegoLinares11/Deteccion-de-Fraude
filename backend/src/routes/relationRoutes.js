@@ -11,6 +11,7 @@ const linkedToRoutes = require('./relations/linkedToRoutes');
 const referredRoutes = require('./relations/referredRoutes');
 const trustRoutes = require('./relations/trustRoutes');
 const servicedByRoutes = require('./relations/servicedByRoutes');
+const connectedViaRoutes = require('./relations/connectedViaRoutes');
 
 // Asignar rutas base
 router.use('/owns', ownsRoutes);          // /api/relations/owns
@@ -22,5 +23,6 @@ router.use('/linkedto', linkedToRoutes); // /api/relations/linkedto
 router.use('/referred', referredRoutes); // /api/relations/referred
 router.use('/trusts', trustRoutes); // /api/relations/trusts
 router.use('/servicedby', servicedByRoutes); // /api/relations/serviced-by
+router.use('/connectedvia', connectedViaRoutes); // /api/relations/connected-via
 
 module.exports = router;

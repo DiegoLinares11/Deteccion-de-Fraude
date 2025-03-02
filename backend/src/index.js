@@ -39,7 +39,8 @@ app.get('/', (req, res) => {
         linkedto: "/api/relations/linkedto",
         referred: "/api/relations/referred",
         trusts: "/api/relations/trusts",
-        servicedby: "/api/relations/servicedby"
+        servicedby: "/api/relations/servicedby",
+        connectedvia: "/api/relations/connectedvia"
     }
 
     }
