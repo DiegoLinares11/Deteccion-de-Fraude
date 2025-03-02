@@ -53,6 +53,7 @@ app.use((err, req, res, next) => {
 // Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🟢 Servidor activo en http://localhost:${PORT}`);
+  //require('./menu'); //esto ya sirve para el menu.
 });
 
 // Cerrar conexión Neo4j al apagar el servidor
