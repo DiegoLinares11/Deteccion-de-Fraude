@@ -9,6 +9,7 @@ const accountRoutes = require('./routes/accountRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
 const locationRoutes = require('./routes/locationRoutes');
 const branchRoutes = require('./routes/branchRoutes');
+const relationRoutes = require('./routes/relationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,7 +29,8 @@ app.get('/', (req, res) => {
       accounts: "/api/accounts",
       device: "/api/devices", 
       locations: "/api/locations",
-      branches: "/api/branches"
+      branches: "/api/branches",
+      relations: "/api/relations"
     }
   });
 });
@@ -40,6 +42,7 @@ app.use('/api/accounts', accountRoutes);
 app.use('/api/devices', deviceRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/branches', branchRoutes);
+app.use('/api/relations', relationRoutes);
 
 // Manejador de errores
 app.use((err, req, res, next) => {
