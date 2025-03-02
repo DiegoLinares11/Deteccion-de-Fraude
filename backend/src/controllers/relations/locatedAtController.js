@@ -4,7 +4,7 @@ const { getSession } = require('../../utils/neo4j');
 const createLocatedAtRelation = async (req, res) => {
   const session = getSession();
   try {
-    const { deviceId, locationId, accessedAt } = req.body;
+    const { deviceId, locationId, coordinates } = req.body;
 
     // Verificar si Device y Location existen
     const checkDevice = await session.run(
@@ -38,9 +38,9 @@ const createLocatedAtRelation = async (req, res) => {
     // Crear la relación LOCATED_AT
     const result = await session.run(
       `MATCH (d:Device {deviceId: $deviceId}), (l:Location {locationId: $locationId})
-       CREATE (d)-[r:located_at {coordinates: $accessedAt}]->(l)
+       CREATE (d)-[r:located_at {coordinates: $coordinates}]->(l)
        RETURN r`,
-      { deviceId, locationId, accessedAt }
+      { deviceId, locationId, coordinates }
     );
 
     res.status(201).json(result.records[0].get('r').properties);
@@ -58,13 +58,13 @@ const getLocatedAtRelations = async (req, res) => {
   try {
     const result = await session.run(
       `MATCH (d:Device)-[r:located_at]->(l:Location)
-       RETURN d.deviceId AS deviceId, l.locationId AS locationId, r.coordinates AS coordenadas`
+       RETURN d.deviceId AS deviceId, l.locationId AS locationId, r.coordinates AS coordinates`
     );
 
     const locatedAtRelations = result.records.map(record => ({
       deviceId: record.get('deviceId'),
       locationId: record.get('locationId'),
-      accessedAt: record.get('accessedAt')
+      coordinates: record.get('coordinates')
     }));
 
     res.json(locatedAtRelations);
@@ -79,13 +79,13 @@ const getLocatedAtRelations = async (req, res) => {
 const updateLocatedAtRelation = async (req, res) => {
   const session = getSession();
   try {
-    const { deviceId, locationId, newAccessedAt } = req.body;
+    const { deviceId, locationId, newCoordinates } = req.body;
 
     const result = await session.run(
       `MATCH (d:Device {deviceId: $deviceId})-[r:located_at]->(l:Location {locationId: $locationId})
-       SET r.coordinates = $newAccessedAt
+       SET r.coordinates = $newCoordinates
        RETURN r`,
-      { deviceId, locationId, newAccessedAt }
+      { deviceId, locationId, newCoordinates }
     );
 
     if (result.records.length === 0) {

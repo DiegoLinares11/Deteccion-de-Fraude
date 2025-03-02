@@ -30,7 +30,12 @@ app.get('/', (req, res) => {
       device: "/api/devices", 
       locations: "/api/locations",
       branches: "/api/branches",
-      relations: "/api/relations"
+      relations: {
+        owns: "/api/relations/owns",
+        transfers: "/api/relations/transfers",
+        uses: "/api/relations/uses",
+        locatedat: "/api/relations/locatedat",}
+
     }
   });
 });
