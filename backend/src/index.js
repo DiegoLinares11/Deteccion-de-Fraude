@@ -6,6 +6,7 @@ const { closeDriver } = require('./utils/neo4j');
 const customerRoutes = require('./routes/customerRoutes');
 const analyticRoutes = require('./routes/analyticRoutes');
 const accountRoutes = require('./routes/accountRoutes');
+const deviceRoutes = require('./routes/deviceRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,7 +23,8 @@ app.get('/', (req, res) => {
     endpoints: {
       customers: "/api/customers",
       analytics: "/api/analytics/fraud-rings",
-      accounts: "/api/accounts"
+      accounts: "/api/accounts",
+      device: "/api/devices" 
     }
   });
 });
@@ -31,7 +33,7 @@ app.get('/', (req, res) => {
 app.use('/api/customers', customerRoutes);
 app.use('/api/analytics', analyticRoutes);
 app.use('/api/accounts', accountRoutes);
-
+app.use('/api/devices', deviceRoutes);
 
 // Manejador de errores
 app.use((err, req, res, next) => {
