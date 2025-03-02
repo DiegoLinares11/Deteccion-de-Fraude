@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const { closeDriver } = require('./utils/neo4j');
 const customerRoutes = require('./routes/customerRoutes');
 const analyticRoutes = require('./routes/analyticRoutes');
+const accountRoutes = require('./routes/accountRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +21,8 @@ app.get('/', (req, res) => {
     message: "API de Detección de Fraude en Neo4j",
     endpoints: {
       customers: "/api/customers",
-      analytics: "/api/analytics/fraud-rings"
+      analytics: "/api/analytics/fraud-rings",
+      accounts: "/api/accounts"
     }
   });
 });
@@ -28,6 +30,8 @@ app.get('/', (req, res) => {
 // Rutas principales
 app.use('/api/customers', customerRoutes);
 app.use('/api/analytics', analyticRoutes);
+app.use('/api/accounts', accountRoutes);
+
 
 // Manejador de errores
 app.use((err, req, res, next) => {
