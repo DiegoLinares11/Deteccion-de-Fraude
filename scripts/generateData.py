@@ -52,11 +52,34 @@ for _ in range(NUM_DEVICES):
     })
 df_devices = pd.DataFrame(devices)
 
-# ... (Generar Location, Branch de manera similar)
+# 4. Nodos: Location
+locations = []
+for _ in range(NUM_LOCATIONS):
+    coords = [float(fake.latitude()), float(fake.longitude())]
+    locations.append({
+        "locationId": fake.uuid4(),
+        "city": fake.city(),
+        "country": fake.country(),
+        "coordinates": coords,
+        "timezone": fake.timezone()
+    })
+df_locations = pd.DataFrame(locations)
 
-# --------------------------
-# Generación de Relaciones
-# --------------------------
+# 5. Nodos: Branch
+branches = []
+for _ in range(NUM_BRANCHES):
+    branches.append({
+        "branchCode": fake.bothify(text='BR-#####'),
+        "name": fake.street_name() + " Branch",
+        "address": fake.address(),
+        "openHours": [fake.time(pattern="%H:%M") for _ in range(2)],  # Ej: ["09:00", "17:00"]
+        "establishedYear": random.randint(1990, 2023)
+    })
+df_branches = pd.DataFrame(branches)
+
+# =====================
+# Generación de Relaciones 
+# =====================
 
 # 1. Relación: OWNS (Customer → Account)
 owns = []
@@ -92,35 +115,6 @@ for _ in range(5000):  # Generar 5000 transacciones
 
 df_transfers = pd.DataFrame(transfers)
 
-
-# 4. Nodos: Location
-locations = []
-for _ in range(NUM_LOCATIONS):
-    coords = [float(fake.latitude()), float(fake.longitude())]
-    locations.append({
-        "locationId": fake.uuid4(),
-        "city": fake.city(),
-        "country": fake.country(),
-        "coordinates": coords,
-        "timezone": fake.timezone()
-    })
-df_locations = pd.DataFrame(locations)
-
-# 5. Nodos: Branch
-branches = []
-for _ in range(NUM_BRANCHES):
-    branches.append({
-        "branchCode": fake.bothify(text='BR-#####'),
-        "name": fake.street_name() + " Branch",
-        "address": fake.address(),
-        "openHours": [fake.time(pattern="%H:%M") for _ in range(2)],  # Ej: ["09:00", "17:00"]
-        "establishedYear": random.randint(1990, 2023)
-    })
-df_branches = pd.DataFrame(branches)
-
-# =====================
-# Generación de Relaciones (FALTANTES)
-# =====================
 
 # 3. USES (Customer → Device)
 uses = []
