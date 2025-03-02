@@ -30,7 +30,7 @@ const createOwnsRelations = async (req, res) => {
       // Crear la relación OWNS
       const result = await session.run(
         `MATCH (c:Customer {customerId: $customerId}), (a:Account {accountNumber: $accountNumber})
-         CREATE (c)-[r:OWNS {since: $since, sharePercentage: $sharePercentage}]->(a)
+         CREATE (c)-[r:owns {since: $since, sharePercentage: $sharePercentage}]->(a)
          RETURN r`,
         { customerId, accountNumber, since, sharePercentage }
       );
@@ -57,7 +57,7 @@ const createUsesRelations = async (req, res) => {
   
       const result = await session.run(
         `MATCH (c:Customer {customerId: $customerId}), (d:Device {deviceId: $deviceId})
-         CREATE (c)-[r:USES {lastAccessed: $lastAccessed, ipAddress: $ipAddress}]->(d)
+         CREATE (c)-[r:uses {lastAccessed: $lastAccessed, ipAddress: $ipAddress}]->(d)
          RETURN r`,
         { customerId, deviceId, lastAccessed: new Date(lastAccessed).toISOString(), ipAddress }
       );
@@ -78,7 +78,7 @@ const createUsesRelations = async (req, res) => {
   
       const result = await session.run(
         `MATCH (a1:Account {accountNumber: $sourceAccount}), (a2:Account {accountNumber: $targetAccount})
-         CREATE (a1)-[r:TRANSFER {
+         CREATE (a1)-[r:transfers {
            amount: $amount,
            currency: $currency,
            transactionDate: datetime(),
