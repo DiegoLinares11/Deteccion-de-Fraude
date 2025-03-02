@@ -1,4 +1,3 @@
-// controllers/relations/referredController.js
 const { getSession } = require('../../utils/neo4j');
 
 // 1. Crear relación REFERRED

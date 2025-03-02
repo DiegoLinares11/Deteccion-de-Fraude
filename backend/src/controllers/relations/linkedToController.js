@@ -1,4 +1,3 @@
-// controllers/relations/linkedToController.js
 const { getSession } = require('../../utils/neo4j');
 
 // 1. Crear relación LINKED_TO

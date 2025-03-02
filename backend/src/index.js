@@ -40,7 +40,9 @@ app.get('/', (req, res) => {
         referred: "/api/relations/referred",
         trusts: "/api/relations/trusts",
         servicedby: "/api/relations/servicedby",
-        connectedvia: "/api/relations/connectedvia"
+        connectedvia: "/api/relations/connectedvia",
+        residesin: "/api/relations/residesin",
+        
     }
 
     }
