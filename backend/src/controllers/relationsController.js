@@ -26,6 +26,16 @@ const createOwnsRelations = async (req, res) => {
       if (checkAccount.records.length === 0) {
         return res.status(404).json({ error: "Account no encontrada" });
       }
+
+          // Verificar si la relación ya existe
+      const checkRelation = await session.run(
+        `MATCH (c:Customer {customerId: $customerId})-[r:owns]->(a:Account {accountNumber: $accountNumber}) RETURN r`,
+        { customerId, accountNumber }
+      );
+
+      if (checkRelation.records.length > 0) {
+        return res.status(400).json({ error: "La relación OWNS ya existe entre este cliente y cuenta" });
+      }
   
       // Crear la relación OWNS
       const result = await session.run(
@@ -103,9 +113,18 @@ const getOwnsRelations = async (req, res) => {
   const session = getSession();
   try {
     const result = await session.run(
-      `MATCH (c:Customer)-[r:owns]->(a:Account) RETURN r`
+      `MATCH (c:Customer)-[r:owns]->(a:Account)
+       RETURN c.firstName AS customerName, a.accountNumber AS accountNumber, r.since AS since, r.sharePercentage AS sharePercentage`
     );
-    res.json(result.records.map(record => record.get('r').properties));
+
+    const relations = result.records.map(record => ({
+      customerName: record.get('customerName'),
+      accountNumber: record.get('accountNumber'),
+      since: record.get('since'),
+      sharePercentage: record.get('sharePercentage')
+    }));
+
+    res.json(relations);
   } catch (error) {
     res.status(500).json({ error: "Error obteniendo relaciones OWNS" });
   } finally {
@@ -113,7 +132,32 @@ const getOwnsRelations = async (req, res) => {
   }
 };
 
-// 2. Obtener todas las TRANSFER entre cuentas
+
+// 2 Obtener todas las relaciones USES
+const getUsesRelations = async (req, res) => {
+  const session = getSession();
+  try {
+    const result = await session.run(
+      `MATCH (c:Customer)-[r:uses]->(d:Device)
+       RETURN c.customerId AS customerId, d.deviceId AS deviceId, r.lastAccessed AS lastAccessed, r.ipAddress AS ipAddress`
+    );
+
+    const usesRelations = result.records.map(record => ({
+      customerId: record.get('customerId'),
+      deviceId: record.get('deviceId'),
+      lastAccessed: record.get('lastAccessed'),
+      ipAddress: record.get('ipAddress')
+    }));
+
+    res.json(usesRelations);
+  } catch (error) {
+    res.status(500).json({ error: "Error obteniendo relaciones USES" });
+  } finally {
+    await session.close();
+  }
+};
+
+// 3. Obtener todas las TRANSFER entre cuentas
 const getAllTransfers = async (req, res) => {
     const session = getSession();
     try {
@@ -152,5 +196,6 @@ module.exports = {
 
   // Funciones de obtención
   getOwnsRelations,
-  getAllTransfers
+  getAllTransfers,
+  getUsesRelations
 };
