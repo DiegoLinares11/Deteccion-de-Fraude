@@ -131,21 +131,98 @@ const getRelationsForEntity = (entity) => {
         description: 'Cliente → Dispositivo',
         entity: 'customers',
         params: ['customerId', 'deviceId', 'lastAccessed', 'ipAddress']
+      },
+      {
+        name: 'TRUSTS',
+        endpoint: 'trusts',
+        description: 'Cliente → Cliente (Relación de confianza)',
+        entity: 'customers',
+        params: ['customerId1', 'customerId2', 'trustScore']
+      },
+      {
+        name: 'REFERRED',
+        endpoint: 'referred',
+        description: 'Cliente → Cliente (Referido)',
+        entity: 'customers',
+        params: ['referrerId', 'referredId', 'referralDate']
+      },
+      {
+        name: 'SERVICED_BY',
+        endpoint: 'serviced_by',
+        description: 'Cliente → Sucursal',
+        entity: 'customers',
+        params: ['customerId', 'branchId', 'serviceDate']
       }
+    ,
+    {
+      name: 'RESIDES_IN',
+      endpoint: 'resides_in',
+      description: 'Cliente → Ubicación (Residencia)',
+      entity: 'customers',
+      params: ['customerId', 'locationId', 'since']
+    }
     ],
     accounts: [
       {
         name: 'TRANSFER',
         endpoint: 'transfers',
-        description: 'Cuenta → Cuenta',
+        description: 'Cuenta → Cuenta (Transacciones)',
         entity: 'accounts',
-        params: ['sourceAccount', 'targetAccount', 'amount', 'currency']
+        params: ['sourceAccount', 'targetAccount', 'amount', 'currency', 'isInternational']
+      },
+      {
+        name: 'CONNECTED_VIA',
+        endpoint: 'connected_via',
+        description: 'Cuenta → Dispositivo',
+        entity: 'accounts',
+        params: ['accountNumber', 'deviceId', 'lastUsed', 'frequency', 'isVerified']
+      },
+      {
+        name: 'OPERATES_AT',
+        endpoint: 'operates_at',
+        description: 'Cuenta → Sucursal',
+        entity: 'accounts',
+        params: ['accountNumber', 'branchCode', 'openHours']
+      },
+      {
+        name: 'LINKED_TO',
+        endpoint: 'linked_to',
+        description: 'Cuenta → Cuenta (Enlace)',
+        entity: 'accounts',
+        params: ['accountNumber1', 'accountNumber2', 'linkType']
+      }
+    ],
+    devices: [
+      {
+        name: 'LOCATED_AT',
+        endpoint: 'located_at',
+        description: 'Dispositivo → Ubicación',
+        entity: 'devices',
+        params: ['deviceId', 'locationId', 'coordinates']
+      },
+    ],
+    locations: [
+      {
+        name: 'LOCATED_AT',
+        endpoint: 'located_at',
+        description: 'Dispositivo → Ubicación',
+        entity: 'locations',
+        params: ['deviceId', 'locationId', 'coordinates']
+      }
+    ],
+    branches: [
+      {
+        name: 'LOCATED_IN',
+        endpoint: 'located_in',
+        description: 'Sucursal → Ubicación',
+        entity: 'branches',
+        params: ['branchId', 'locationId']
       }
     ]
-    // Agregar más relaciones según corresponda
   };
   return relationsMap[entity] || [];
 };
+
 
 // ================================================
 // Funciones CRUD genéricas
