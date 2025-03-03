@@ -137,7 +137,7 @@ const getRelationsForEntity = (entity) => {
         endpoint: 'trusts',
         description: 'Cliente → Cliente (Relación de confianza)',
         entity: 'customers',
-        params: ['customerId1', 'customerId2', 'trustScore']
+        params: ['customerId1', 'customerId2', 'trustLevel', 'since']
       },
       {
         name: 'REFERRED',
@@ -272,17 +272,6 @@ const createEntity = async (entity) => {
   entityMenu(entity);
 };
 
-// Función para listar relaciones (ejemplo)
-const listRelations = async (relation) => {
-  try {
-    const res = await axios.get(`http://localhost:3000/api/relations/${relation.endpoint}`);
-    console.log('\n🔗 Relaciones encontradas:');
-    console.table(res.data);
-  } catch (err) {
-    handleError(err);
-  }
-  relationCRUDMenu(relation);
-};
 
 // Listar por entidades
 const listEntities = async (entity) => {
@@ -390,7 +379,80 @@ const deleteEntity = async (entity) => {
 };
 
 
+// ================================================
+// Funciones CRUD para Relaciones (Genéricas)
+// ================================================
 
+const createRelation = async (relation) => {
+  const inputs = {};
+  
+  // Pedir parámetros específicos de la relación
+  for (const param of relation.params) {
+    inputs[param] = await askQuestion(`${param}: `);
+  }
+
+  try {
+    const res = await axios.post(`http://localhost:3000/api/relations/${relation.endpoint}`, inputs);
+    console.log('✅ Relación creada:', res.data);
+  } catch (err) {
+    handleError(err);
+  }
+  relationCRUDMenu(relation);
+};
+
+const listRelations = async (relation) => {
+  try {
+    const res = await axios.get(`http://localhost:3000/api/relations/${relation.endpoint}`);
+    console.log('\n🔗 Relaciones encontradas:');
+    console.table(res.data);
+  } catch (err) {
+    handleError(err);
+  }
+  relationCRUDMenu(relation);
+};
+
+const updateRelation = async (relation) => {
+  const inputs = {};
+  
+  // Pedir parámetros de identificación
+  const idParams = relation.params.filter(p => p.toLowerCase().includes('id') || p === 'accountnumber');
+  for (const param of idParams) {
+    inputs[param] = await askQuestion(`${param} para buscar: `);
+  }
+
+  // Pedir nuevas propiedades
+  const updatableParams = relation.params.filter(p => !idParams.includes(p));
+  for (const param of updatableParams) {
+    const value = await askQuestion(`Nuevo valor para ${param} (dejar vacío para omitir): `);
+    if (value) inputs[param] = value;
+  }
+
+  try {
+    const res = await axios.put(`http://localhost:3000/api/relations/${relation.endpoint}`, inputs);
+    console.log('✅ Relación actualizada:', res.data);
+  } catch (err) {
+    handleError(err);
+  }
+  relationCRUDMenu(relation);
+};
+
+const deleteRelation = async (relation) => {
+  const inputs = {};
+  
+  // Pedir parámetros de identificación
+  const idParams = relation.params.filter(p => p.toLowerCase().includes('id') || p === 'accountnumber');
+  for (const param of idParams) {
+    inputs[param] = await askQuestion(`${param} para eliminar: `);
+  }
+
+  try {
+    const res = await axios.delete(`http://localhost:3000/api/relations/${relation.endpoint}`, { data: inputs });
+    console.log('🗑️ Relación eliminada:', res.data.message);
+  } catch (err) {
+    handleError(err);
+  }
+  relationCRUDMenu(relation);
+};
 
 
 // ================================================
