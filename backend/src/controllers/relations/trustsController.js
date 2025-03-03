@@ -78,27 +78,27 @@ const getTrustsRelations = async (req, res) => {
 
 // Actualizar relación TRUSTS
 const updateTrustsRelation = async (req, res) => {
-  const session = getSession();
-  try {
-    const { customerId1, customerId2, newTrustLevel } = req.body;
+    const session = getSession();
+    try {
+        const { customerId1, customerId2, newTrustLevel, newSince } = req.body;
 
-    const result = await session.run(
-      `MATCH (c1:Customer {customerId: $customerId1})-[r:trusts]->(c2:Customer {customerId: $customerId2})
-       SET r.trustLevel = $newTrustLevel
-       RETURN r`,
-      { customerId1, customerId2, newTrustLevel }
-    );
+        const result = await session.run(
+            `MATCH (c1:Customer {customerId: $customerId1})-[r:trusts]->(c2:Customer {customerId: $customerId2})
+             SET r.trustLevel = $newTrustLevel, r.since = $newSince
+             RETURN r`,
+            { customerId1, customerId2, newTrustLevel, newSince }
+        );
 
-    if (result.records.length === 0) {
-      return res.status(404).json({ error: "Relación TRUSTS no encontrada" });
+        if (result.records.length === 0) {
+            return res.status(404).json({ error: "Relación TRUSTS no encontrada" });
+        }
+
+        res.json(result.records[0].get('r').properties);
+    } catch (error) {
+        res.status(500).json({ error: "Error actualizando relación TRUSTS" });
+    } finally {
+        await session.close();
     }
-
-    res.json(result.records[0].get('r').properties);
-  } catch (error) {
-    res.status(500).json({ error: "Error actualizando relación TRUSTS" });
-  } finally {
-    await session.close();
-  }
 };
 
 // Eliminar relación TRUSTS
