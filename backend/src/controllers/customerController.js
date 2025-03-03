@@ -90,7 +90,7 @@ const updateCustomer = async (req, res) => {
   const session = getSession();
   try {
     const { id } = req.params;
-    const { firstName, lastName } = req.body;
+    const { firstName, lastName, email, highRisk } = req.body;
 
     if (!firstName && !lastName) {
       return res.status(400).json({ error: 'Debe proporcionar al menos un campo para actualizar' });
@@ -99,9 +99,11 @@ const updateCustomer = async (req, res) => {
     const result = await session.run(
       `MATCH (c:Customer {customerId: $id})
        SET c.firstName = COALESCE($firstName, c.firstName),
-           c.lastName = COALESCE($lastName, c.lastName)
+           c.lastName = COALESCE($lastName, c.lastName),
+           c.email = COALESCE($email, c.email),
+           c.highRisk = COALESCE($highRisk, c.highRisk)
        RETURN c`,
-      { id, firstName, lastName }
+      { id, firstName, lastName, email, highRisk }
     );
 
     if (result.records.length === 0) {
