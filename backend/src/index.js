@@ -38,8 +38,11 @@ app.get('/', (req, res) => {
         },
         cascadeChains: "/api/analytics/cascade-chains",
         highRiskCustomers: "/api/analytics/high-risk-customers",
-        anomalousCustomers: "/api/analytics/anomalous-customers"
+        anomalousCustomers: "/api/analytics/anomalous-customers",
+        kmeans: "/api/analytics/kmeans-clustering", // Nuevo endpoint de ML
+
       },
+
       accounts: "/api/accounts",
       device: "/api/devices", 
       locations: "/api/locations",

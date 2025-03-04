@@ -226,6 +226,43 @@ const getAnomalousCustomers = async (req, res) => {
   }
 };
 
+const getKMeansClustering = async (req, res) => {
+  const session = getSession();
+  try {
+    // Extraer datos de transacciones para clustering
+    const result = await session.run(`
+      MATCH (c:Customer)-[:owns]->(a:Account)-[t:transfers]->(:Account)
+      WITH t,
+           CASE 
+             WHEN t.transactionDate CONTAINS 'T' 
+             THEN datetime(t.transactionDate)
+             ELSE datetime(replace(t.transactionDate, ' ', 'T'))
+           END AS dt
+      RETURN toFloat(t.amount) AS amount, 
+             toInteger(dt.hour) AS hour,
+             dt AS transactionDate
+      LIMIT 100
+    `);
+
+    await session.close();
+
+    // Convertir registros en un array simple de transacciones
+    const transactions = result.records.map(record => ({
+      amount: record.get("amount"),
+      hour: record.get("hour"),
+      transactionDate: record.get("transactionDate")
+    }));
+
+    // Retornamos directamente el array de transacciones
+    res.json(transactions);
+  } catch (error) {
+    console.error("Error en getKMeansClustering:", error.message);
+    res.status(500).json({ error: "Error en getKMeansClustering", details: error.message });
+  }
+};
+
+module.exports = {  };
+
 module.exports = {
   getSimpleFraudRings,
   getUniqueFraudRings,
@@ -236,5 +273,6 @@ module.exports = {
   getTimeOutliers,
   getCascadeTransferChains,
   getHighRiskCustomers,
-  getAnomalousCustomers
+  getAnomalousCustomers,
+  getKMeansClustering
 };
