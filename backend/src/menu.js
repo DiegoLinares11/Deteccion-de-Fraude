@@ -17,8 +17,9 @@ const mainMenu = () => {
   console.log('4. Ubicaciones (Location)');
   console.log('5. Sucursales (Branch)');
   console.log('6. Salir');
+  console.log('7. Analítica (Detección de Fraude)');
   
-  rl.question('\nSeleccione una entidad (1-6): ', (option) => {
+  rl.question('\nSeleccione una opción (1-7): ', (option) => {
     switch(option) {
       case '1': entityMenu('customers'); break;
       case '2': entityMenu('accounts'); break;
@@ -29,6 +30,7 @@ const mainMenu = () => {
         console.log('👋 ¡Hasta luego!');
         rl.close();
         process.exit(0);
+      case '7': analyticMenu(); break;
       default: 
         console.log('❌ Opción inválida');
         mainMenu();
@@ -113,7 +115,70 @@ const relationCRUDMenu = (relation) => {
 };
 
 // ================================================
-// Funciones de apoyo
+// 5. Menú de Analítica (Detección de Fraude)
+// ================================================
+const analyticMenu = () => {
+  console.log('\n=== MENÚ DE ANALÍTICA ===');
+  console.log('1. Fraud Rings - Robust (deducción de monto)');
+  console.log('2. Fraud Rings - Simple');
+  console.log('3. Fraud Rings - Único (sin duplicados)');
+  console.log('4. Fraud Rings - Cronológico');
+  console.log('5. Volver al menú principal');
+  
+  rl.question('\nSeleccione una opción (1-5): ', async (option) => {
+    try {
+      let response;
+      switch(option) {
+        case '1':
+          response = await axios.get('http://localhost:3000/api/analytics/fraud-rings/robust');
+          if (response.data.length === 0) {
+            console.log('⚠️ No se encontraron resultados. Verifica que existan:');
+            console.log('1. Clientes en la base de datos');
+            console.log('2. Cuentas asociadas a los clientes');
+            console.log('3. Transferencias entre cuentas');
+          } else {
+            console.table(response.data);
+          }
+          break;
+        case '2':
+          response = await axios.get('http://localhost:3000/api/analytics/fraud-rings/simple');
+          if (response.data.length === 0) {
+            console.log('⚠️ No se encontraron resultados. Verifica que existan transferencias entre cuentas.');
+          } else {
+            console.table(response.data);
+          }
+          break;
+        case '3':
+          response = await axios.get('http://localhost:3000/api/analytics/fraud-rings/unique');
+          if (response.data.length === 0) {
+            console.log('⚠️ No se encontraron resultados. Verifica que existan transferencias únicas entre clientes.');
+          } else {
+            console.table(response.data);
+          }
+          break;
+        case '4':
+          response = await axios.get('http://localhost:3000/api/analytics/fraud-rings/chronological');
+          if (response.data.length === 0) {
+            console.log('⚠️ No se encontraron resultados. Verifica que existan transferencias con timestamps.');
+          } else {
+            console.table(response.data);
+          }
+          break;
+        case '5':
+          mainMenu();
+          return;
+        default:
+          console.log('❌ Opción inválida');
+      }
+    } catch (error) {
+      console.log('❌ Error en la consulta de analítica:', error.message);
+    }
+    analyticMenu();
+  });
+};
+
+// ================================================
+// Funciones de apoyo para entidades y relaciones
 // ================================================
 const getRelationsForEntity = (entity) => {
   const relationsMap = {
@@ -152,15 +217,14 @@ const getRelationsForEntity = (entity) => {
         description: 'Cliente → Sucursal',
         entity: 'customers',
         params: ['customerId', 'branchId', 'serviceDate']
+      },
+      {
+        name: 'RESIDES_IN',
+        endpoint: 'resides_in',
+        description: 'Cliente → Ubicación (Residencia)',
+        entity: 'customers',
+        params: ['customerId', 'locationId', 'since']
       }
-    ,
-    {
-      name: 'RESIDES_IN',
-      endpoint: 'resides_in',
-      description: 'Cliente → Ubicación (Residencia)',
-      entity: 'customers',
-      params: ['customerId', 'locationId', 'since']
-    }
     ],
     accounts: [
       {
@@ -199,7 +263,7 @@ const getRelationsForEntity = (entity) => {
         description: 'Dispositivo → Ubicación',
         entity: 'devices',
         params: ['deviceId', 'locationId', 'coordinates']
-      },
+      }
     ],
     locations: [
       {
@@ -225,7 +289,7 @@ const getRelationsForEntity = (entity) => {
 
 
 // ================================================
-// Funciones CRUD genéricas
+// Funciones CRUD genéricas para entidades
 // ================================================
 const createEntity = async (entity) => {
   const questions = {
@@ -272,8 +336,7 @@ const createEntity = async (entity) => {
   entityMenu(entity);
 };
 
-
-// Listar por entidades
+// Listar entidades
 const listEntities = async (entity) => {
   try {
     const res = await axios.get(`http://localhost:3000/api/${entity}`);
@@ -285,7 +348,7 @@ const listEntities = async (entity) => {
   entityMenu(entity);
 };
 
-// Listar entidades por ID
+// Obtener entidad por ID
 const getEntityById = async (entity) => {
   const idField = entity === 'customers' ? 'customerId' : 
                   entity === 'accounts' ? 'accountNumber' :
@@ -359,7 +422,6 @@ const updateEntity = async (entity) => {
   entityMenu(entity);
 };
 
-// Eliminar entidades
 const deleteEntity = async (entity) => {
   const idField = entity === 'customers' ? 'customerId' : 
                   entity === 'accounts' ? 'accountNumber' :
@@ -378,11 +440,9 @@ const deleteEntity = async (entity) => {
   entityMenu(entity);
 };
 
-
 // ================================================
-// Funciones CRUD para Relaciones (Genéricas)
+// Funciones CRUD genéricas para Relaciones (Relaciones)
 // ================================================
-
 const createRelation = async (relation) => {
   const inputs = {};
   
@@ -453,7 +513,6 @@ const deleteRelation = async (relation) => {
   }
   relationCRUDMenu(relation);
 };
-
 
 // ================================================
 // Funciones auxiliares
