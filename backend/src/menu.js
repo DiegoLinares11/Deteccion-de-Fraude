@@ -148,7 +148,7 @@ const getRelationsForEntity = (entity) => {
       },
       {
         name: 'SERVICED_BY',
-        endpoint: 'serviced_by',
+        endpoint: 'servicedby',
         description: 'Cliente → Sucursal',
         entity: 'customers',
         params: ['customerId', 'branchId', 'serviceDate']
@@ -156,7 +156,7 @@ const getRelationsForEntity = (entity) => {
     ,
     {
       name: 'RESIDES_IN',
-      endpoint: 'resides_in',
+      endpoint: 'residesin',
       description: 'Cliente → Ubicación (Residencia)',
       entity: 'customers',
       params: ['customerId', 'locationId', 'since']
@@ -172,21 +172,21 @@ const getRelationsForEntity = (entity) => {
       },
       {
         name: 'CONNECTED_VIA',
-        endpoint: 'connected_via',
+        endpoint: 'connectedvia',
         description: 'Cuenta → Dispositivo',
         entity: 'accounts',
         params: ['accountNumber', 'deviceId', 'lastUsed', 'frequency', 'isVerified']
       },
       {
         name: 'OPERATES_AT',
-        endpoint: 'operates_at',
+        endpoint: 'operateat',
         description: 'Cuenta → Sucursal',
         entity: 'accounts',
         params: ['accountNumber', 'branchCode', 'openHours']
       },
       {
         name: 'LINKED_TO',
-        endpoint: 'linked_to',
+        endpoint: 'linkedto',
         description: 'Cuenta → Cuenta (Enlace)',
         entity: 'accounts',
         params: ['accountNumber1', 'accountNumber2', 'linkType']
@@ -195,7 +195,7 @@ const getRelationsForEntity = (entity) => {
     devices: [
       {
         name: 'LOCATED_AT',
-        endpoint: 'located_at',
+        endpoint: 'locatedat',
         description: 'Dispositivo → Ubicación',
         entity: 'devices',
         params: ['deviceId', 'locationId', 'coordinates']
@@ -204,7 +204,7 @@ const getRelationsForEntity = (entity) => {
     locations: [
       {
         name: 'LOCATED_AT',
-        endpoint: 'located_at',
+        endpoint: 'locatedat',
         description: 'Dispositivo → Ubicación',
         entity: 'locations',
         params: ['deviceId', 'locationId', 'coordinates']
@@ -213,7 +213,7 @@ const getRelationsForEntity = (entity) => {
     branches: [
       {
         name: 'LOCATED_IN',
-        endpoint: 'located_in',
+        endpoint: 'locatedin',
         description: 'Sucursal → Ubicación',
         entity: 'branches',
         params: ['branchId', 'locationId']

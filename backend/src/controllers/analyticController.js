@@ -1,6 +1,6 @@
 const { getSession } = require('../utils/neo4j');
 
-// Función para detectar anillos de fraude (DEBE EXISTIR)
+// Función para detectar anillos de fraude 
 const getFraudRings = async (req, res) => {
   const session = getSession();
   try {
