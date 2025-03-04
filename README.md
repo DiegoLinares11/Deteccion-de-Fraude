@@ -12,7 +12,10 @@ Ejectuta:
  ```bash
   npm install express neo4j-driver dotenv
 ```
-
+Luego ya dentro de la carpeta Backend ejectua: 
+ ```bash
+  npm run dev
+```
 
 ### Si quieres ejecutar los scripts de python:
 Para los scripts de python quisimos hacer uso de Faker, pero para ello no estaba disponible en las versiones de python mas reciente por lo que tuvimos que bajar de version de python. Para ello y con la facilidad de estar utilizando *Manjaro Linux* entonces lo que hicimos fue: 

@@ -36,7 +36,21 @@ app.get('/', (req, res) => {
     message: "API de Detección de Fraude en Neo4j",
     endpoints: {
       customers: "/api/customers",
-      analytics: "/api/analytics/fraud-rings",
+      analytics: {
+        fraudRings: {
+          robust: "/api/analytics/fraud-rings/robust",
+          simple: "/api/analytics/fraud-rings/simple",
+          unique: "/api/analytics/fraud-rings/unique",
+          chronological: "/api/analytics/fraud-rings/chronological"
+        },
+        outliers: {
+          amount: "/api/analytics/amount-outliers",
+          time: "/api/analytics/time-outliers"
+        },
+        cascadeChains: "/api/analytics/cascade-chains",
+        highRiskCustomers: "/api/analytics/high-risk-customers",
+        anomalousCustomers: "/api/analytics/anomalous-customers"
+      },
       accounts: "/api/accounts",
       device: "/api/devices", 
       locations: "/api/locations",
@@ -56,8 +70,7 @@ app.get('/', (req, res) => {
         residesin: "/api/relations/residesin",
         connectedvia: "/api/relations/connectedvia",
         locatedin: "/api/relations/locatedin"
-    }
-
+      }
     }
   });
 });
