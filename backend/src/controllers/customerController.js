@@ -10,6 +10,16 @@ const createCustomer = async (req, res) => {
       return res.status(400).json({ error: 'Todos los campos son obligatorios' });
     }
 
+    // Verificar si el cliente ya existe
+    const checkResult = await session.run(
+      'MATCH (c:Customer {firstName: $firstName, lastName: $lastName, email: $email}) RETURN c',
+      { firstName, lastName, email }
+    );
+
+    if (checkResult.records.length > 0) {
+      return res.status(409).json({ error: 'El cliente ya está registrado' });
+    }
+
     const result = await session.run(
       `MERGE (c:Customer {
         customerId: randomUUID(),
