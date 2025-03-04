@@ -4,7 +4,7 @@ const { getSession } = require('../../utils/neo4j');
 const createTrustsRelation = async (req, res) => {
   const session = getSession();
   try {
-    const { customerId1, customerId2, trustLevel, since } = req.body;
+    const { customerId1, customerId2, trustLevel } = req.body;
 
     // Verificar si ambos clientes existen
     const checkCustomer1 = await session.run(
@@ -38,9 +38,9 @@ const createTrustsRelation = async (req, res) => {
     // Crear la relación TRUSTS
     const result = await session.run(
       `MATCH (c1:Customer {customerId: $customerId1}), (c2:Customer {customerId: $customerId2})
-       CREATE (c1)-[r:trusts {trustLevel: $trustLevel, since: $since}]->(c2)
+       CREATE (c1)-[r:trusts {trustLevel: $trustLevel, since: datetime()}]->(c2)
        RETURN r`,
-      { customerId1, customerId2, trustLevel, since }
+      { customerId1, customerId2, trustLevel }
     );
 
     res.status(201).json(result.records[0].get('r').properties);
@@ -80,26 +80,38 @@ const getTrustsRelations = async (req, res) => {
 const updateTrustsRelation = async (req, res) => {
     const session = getSession();
     try {
-        const { customerId1, customerId2, newTrustLevel, newSince } = req.body;
+        const { customerId1, customerId2, trustLevel } = req.body;
 
-        const result = await session.run(
+        // Verificar si la relación TRUSTS existe
+        const checkRelation = await session.run(
             `MATCH (c1:Customer {customerId: $customerId1})-[r:trusts]->(c2:Customer {customerId: $customerId2})
-             SET r.trustLevel = $newTrustLevel, r.since = $newSince
              RETURN r`,
-            { customerId1, customerId2, newTrustLevel, newSince }
+            { customerId1, customerId2 }
         );
 
-        if (result.records.length === 0) {
+        if (checkRelation.records.length === 0) {
             return res.status(404).json({ error: "Relación TRUSTS no encontrada" });
         }
 
-        res.json(result.records[0].get('r').properties);
+        // Actualizar trustLevel y la fecha actual
+        const result = await session.run(
+            `MATCH (c1:Customer {customerId: $customerId1})-[r:trusts]->(c2:Customer {customerId: $customerId2})
+             SET r.trustLevel = $trustLevel,
+                 r.since = datetime()
+             RETURN r`,
+            { customerId1, customerId2, trustLevel }
+        );
+
+        const updatedRelation = result.records[0].get('r').properties;
+        res.json(updatedRelation);
     } catch (error) {
+        console.error("❌ Error en updateTrustsRelation:", error.message);
         res.status(500).json({ error: "Error actualizando relación TRUSTS" });
     } finally {
         await session.close();
     }
 };
+
 
 // Eliminar relación TRUSTS
 const deleteTrustsRelation = async (req, res) => {
@@ -107,18 +119,33 @@ const deleteTrustsRelation = async (req, res) => {
   try {
     const { customerId1, customerId2 } = req.body;
 
-    await session.run(
+    // Verificar si la relación TRUSTS existe
+    const checkRelation = await session.run(
       `MATCH (c1:Customer {customerId: $customerId1})-[r:trusts]->(c2:Customer {customerId: $customerId2})
-       DELETE r`
+       RETURN r`,
+      { customerId1, customerId2 }
     );
 
-    res.json({ message: "Relación TRUSTS eliminada" });
+    if (checkRelation.records.length === 0) {
+      return res.status(404).json({ error: "Relación TRUSTS no encontrada" });
+    }
+
+    // Eliminar la relación
+    await session.run(
+      `MATCH (c1:Customer {customerId: $customerId1})-[r:trusts]->(c2:Customer {customerId: $customerId2})
+       DELETE r`,
+      { customerId1, customerId2 }
+    );
+
+    res.json({ message: "✅ Relación TRUSTS eliminada correctamente." });
   } catch (error) {
+    console.error("❌ Error en deleteTrustsRelation:", error.message);
     res.status(500).json({ error: "Error eliminando relación TRUSTS" });
   } finally {
     await session.close();
   }
 };
+
 
 module.exports = {
   createTrustsRelation,

@@ -10,6 +10,8 @@ const deviceRoutes = require('./routes/deviceRoutes');
 const locationRoutes = require('./routes/locationRoutes');
 const branchRoutes = require('./routes/branchRoutes');
 const relationRoutes = require('./routes/relationRoutes');
+const nodeRoutes = require('./routes/nodeRoutes');
+const relacionRoutes = require('./routes/relations/relacionRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +20,15 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
+
+app.use((req, res, next) => {
+  if (req.method === 'DELETE') {
+    express.json()(req, res, next); 
+  } else {
+    next();
+  }
+});
+
 
 // Ruta de verificación
 app.get('/', (req, res) => {
@@ -47,6 +58,8 @@ app.get('/', (req, res) => {
       device: "/api/devices", 
       locations: "/api/locations",
       branches: "/api/branches",
+      nodes: "/api/nodes",
+      relacion: "/api/relacion",
       relations: {
         owns: "/api/relations/owns",
         transfers: "/api/relations/transfers",
@@ -73,6 +86,8 @@ app.use('/api/devices', deviceRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/branches', branchRoutes);
 app.use('/api/relations', relationRoutes);
+app.use('/api/nodes', nodeRoutes);
+app.use('/api/relacion', relacionRoutes);
 
 // Manejador de errores
 app.use((err, req, res, next) => {

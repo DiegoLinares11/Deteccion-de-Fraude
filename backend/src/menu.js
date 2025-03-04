@@ -283,6 +283,7 @@ const analyticMenu = () => {
 const getRelationsForEntity = (entity) => {
   const relationsMap = {
     customers: [
+<<<<<<< HEAD
       {
         name: "OWNS",
         endpoint: "owns",
@@ -395,6 +396,127 @@ const getRelationsForEntity = (entity) => {
         params: ["branchId", "locationId"],
       },
     ],
+=======
+      { 
+        name: 'OWNS', 
+        endpoint: 'owns',
+        description: 'Cliente → Cuenta',
+        entity: 'customers',
+        params: ['customerId', 'accountNumber', 'since', 'sharePercentage'],
+        updateParams: ['sharePercentage'] // Solo se puede actualizar esto
+      },
+      {
+        name: 'USES',
+        endpoint: 'uses',
+        description: 'Cliente → Dispositivo',
+        entity: 'customers',
+        params: ['customerId', 'deviceId', 'lastAccessed', 'ipAddress'],
+        updateParams: ['lastAccessed', 'ipAddress']
+      },
+      {
+        name: 'TRUSTS',
+        endpoint: 'trusts',
+        description: 'Cliente → Cliente (Relación de confianza)',
+        entity: 'customers',
+        params: ['customerId1', 'customerId2', 'trustLevel'],
+        updateParams: ['trustLevel']
+
+      },
+      {
+        name: 'REFERRED',
+        endpoint: 'referred',
+        description: 'Cliente → Cliente (Referido)',
+        entity: 'customers',
+        params: ['referrerId', 'referredId', 'referralDate', 'bonusAmount'],
+        updateParams: ['bonusAmount']
+      },
+      {
+        name: 'SERVICED_BY',
+        endpoint: 'servicedby',
+        description: 'Cliente → Sucursal',
+        entity: 'customers',
+
+        params: ['customerId', 'branchId', 'serviceDate', 'feedbackScore'],
+        updateParams: ['feedbackScore']
+      }
+    ,
+    {
+      name: 'RESIDES_IN',
+      endpoint: 'residesin',
+      description: 'Cliente → Ubicación (Residencia)',
+      entity: 'customers',
+      params: ['customerId', 'locationId', 'since', 'verificationStatus'],
+      updateParams: ['verificationStatus'] 
+    }
+
+    ],
+    accounts: [
+      {
+        name: 'TRANSFER',
+        endpoint: 'transfers',
+        description: 'Cuenta → Cuenta (Transacciones)',
+        entity: 'accounts',
+        params: ['sourceAccount', 'targetAccount', 'amount', 'currency', 'isInternational'],
+        updateParams: ['amount', 'currency']
+      },
+      {
+        name: 'CONNECTED_VIA',
+        endpoint: 'connectedvia',
+        description: 'Cuenta → Dispositivo',
+        entity: 'accounts',
+        params: ['accountNumber', 'deviceId', 'lastUsed', 'frequency', 'isVerified'],
+        updateParams: ['frequency', 'isVerified']
+      },
+      {
+        name: 'OPERATES_AT',
+        endpoint: 'operateat',
+        description: 'Cuenta → Sucursal',
+        entity: 'accounts',
+        params: ['accountNumber', 'branchCode', 'openHours'],
+        updateParams: ['openHours']
+      },
+      {
+        name: 'LINKED_TO',
+        endpoint: 'linkedto',
+        description: 'Cuenta → Cuenta (Enlace)',
+        entity: 'accounts',
+        params: ['accountNumber1', 'accountNumber2', 'linkType'],
+        updateParams: ['linkType']
+      }
+    ],
+    devices: [
+      {
+        name: 'LOCATED_AT',
+        endpoint: 'locatedat',
+        description: 'Dispositivo → Ubicación',
+        entity: 'devices',
+
+        params: ['deviceId', 'locationId', 'coordinates', 'accuracy'],
+        updateParams: ['coordinates', 'accuracy']
+      },
+
+    ],
+    locations: [
+      {
+        name: 'LOCATED_AT',
+        endpoint: 'locatedat',
+        description: 'Dispositivo → Ubicación',
+        entity: 'locations',
+        params: ['deviceId', 'locationId', 'coordinates', 'accuracy'],
+        updateParams: ['coordinates', 'accuracy']
+      }
+    ],
+    branches: [
+      {
+        name: 'LOCATED_IN',
+        endpoint: 'locatedin',
+        description: 'Sucursal → Ubicación',
+        entity: 'branches',
+        params: ['branchId', 'locationId', 'branchArea', 'geoAccuracy'],
+        updateParams: ['branchArea', 'geoAccuracy']
+      }
+    ]
+>>>>>>> 0ee993ebb001b6e8bfba3ef6d851bc1f5fb6b2e9
   };
   return relationsMap[entity] || [];
 };
@@ -628,6 +750,7 @@ const listRelations = async (relation) => {
 };
 
 const updateRelation = async (relation) => {
+<<<<<<< HEAD
   const inputs = {};
 
   // Pedir parámetros de identificación
@@ -653,6 +776,27 @@ const updateRelation = async (relation) => {
       inputs
     );
     console.log("✅ Relación actualizada:", res.data);
+=======
+  console.log(`\n🔄 Actualizando relación ${relation.name}...\n`);
+
+  const filterInputs = {};
+  for (const param of relation.params) {
+    filterInputs[param] = await askQuestion(`${param} para buscar: `);
+  }
+
+  const updateInputs = {};
+  for (const param of relation.updateParams) {
+    const value = await askQuestion(`Nuevo valor para ${param} (dejar vacío para omitir): `);
+    if (value) updateInputs[param] = value; // Solo añade los valores no vacíos
+  }
+
+  try {
+    const res = await axios.put(`http://localhost:3000/api/relations/${relation.endpoint}`, {
+      ...filterInputs,
+      ...updateInputs
+    });
+    console.log('✅ Relación actualizada:', res.data);
+>>>>>>> 0ee993ebb001b6e8bfba3ef6d851bc1f5fb6b2e9
   } catch (err) {
     handleError(err);
   }
@@ -661,26 +805,43 @@ const updateRelation = async (relation) => {
 
 const deleteRelation = async (relation) => {
   const inputs = {};
+<<<<<<< HEAD
 
   // Pedir parámetros de identificación
   const idParams = relation.params.filter(
     (p) => p.toLowerCase().includes("id") || p === "accountnumber"
   );
+=======
+  
+  // Pedir parámetros para identificar la relación a eliminar (IDs, accountNumber, etc.)
+  const idParams = relation.params.filter(p => p.toLowerCase().includes('id') || p === 'accountNumber');
+>>>>>>> 0ee993ebb001b6e8bfba3ef6d851bc1f5fb6b2e9
   for (const param of idParams) {
     inputs[param] = await askQuestion(`${param} para eliminar: `);
   }
 
   try {
+<<<<<<< HEAD
     const res = await axios.delete(
       `http://localhost:3000/api/relations/${relation.endpoint}`,
       { data: inputs }
     );
     console.log("🗑️ Relación eliminada:", res.data.message);
+=======
+    // Realizar la solicitud DELETE con los parámetros correctos
+    const res = await axios.delete(`http://localhost:3000/api/relations/${relation.endpoint}`, { 
+      data: inputs // Axios envía el body así en DELETE
+    });
+
+    console.log('🗑️ Relación eliminada:', res.data.message);
+>>>>>>> 0ee993ebb001b6e8bfba3ef6d851bc1f5fb6b2e9
   } catch (err) {
-    handleError(err);
+    handleError(err); // Maneja cualquier error
   }
-  relationCRUDMenu(relation);
+
+  relationCRUDMenu(relation); // Volver al menú después de eliminar
 };
+
 
 // ================================================
 // Funciones auxiliares

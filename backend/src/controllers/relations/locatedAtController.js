@@ -4,7 +4,7 @@ const { getSession } = require('../../utils/neo4j');
 const createLocatedAtRelation = async (req, res) => {
   const session = getSession();
   try {
-    const { deviceId, locationId, coordinates } = req.body;
+    const { deviceId, locationId, coordinates, accuracy } = req.body;
 
     // Verificar si Device y Location existen
     const checkDevice = await session.run(
@@ -34,13 +34,12 @@ const createLocatedAtRelation = async (req, res) => {
     if (checkRelation.records.length > 0) {
       return res.status(400).json({ error: "La relación LOCATED_AT ya existe entre este dispositivo y ubicación" });
     }
-
     // Crear la relación LOCATED_AT
     const result = await session.run(
       `MATCH (d:Device {deviceId: $deviceId}), (l:Location {locationId: $locationId})
-       CREATE (d)-[r:located_at {coordinates: $coordinates}]->(l)
+       CREATE (d)-[r:located_at {coordinates: $coordinates, accuracy: $accuracy}]->(l)
        RETURN r`,
-      { deviceId, locationId, coordinates }
+      { deviceId, locationId, coordinates, accuracy }
     );
 
     res.status(201).json(result.records[0].get('r').properties);

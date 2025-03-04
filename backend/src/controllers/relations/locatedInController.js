@@ -82,17 +82,18 @@ const getLocatedInRelations = async (req, res) => {
   }
 };
 
-// 3. Actualizar precisión geográfica
+// 3. Actualizar precisión geográfica y área de la sucursal
 const updateGeoAccuracy = async (req, res) => {
   const session = getSession();
   try {
-    const { branchCode, locationId, newAccuracy } = req.body;
+    const { branchCode, locationId, newAccuracy, newBranchArea } = req.body;
     
     const result = await session.run(
       `MATCH (b:Branch {branchCode: $branchCode})-[r:located_in]->(l:Location {locationId: $locationId})
-       SET r.geoAccuracy = $newAccuracy
+       SET r.geoAccuracy = $newAccuracy,
+           r.branchArea = $newBranchArea
        RETURN r`,
-      { branchCode, locationId, newAccuracy: parseFloat(newAccuracy) }
+      { branchCode, locationId, newAccuracy: parseFloat(newAccuracy), newBranchArea }
     );
 
     if (result.records.length === 0) {
@@ -101,7 +102,7 @@ const updateGeoAccuracy = async (req, res) => {
 
     res.json(result.records[0].get('r').properties);
   } catch (error) {
-    res.status(500).json({ error: "Error actualizando precisión" });
+    res.status(500).json({ error: "Error actualizando precisión y área" });
   } finally {
     await session.close();
   }
