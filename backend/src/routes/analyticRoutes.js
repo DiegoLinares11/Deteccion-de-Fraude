@@ -1,7 +1,7 @@
 const express = require('express');
 const analyticController = require('../controllers/analyticController');
 const router = express.Router();
-const { driver } = require('../utils/neo4j');
+const { driver, getSession } = require('../utils/neo4j');
 
 // Fraud Rings - Robust (with amount deduction)
 router.get('/fraud-rings/robust', async (req, res) => {
@@ -107,5 +107,132 @@ router.get('/fraud-rings/chronological', async (req, res) => {
     }
 });
 
+// Amount Outliers
+router.get('/amount-outliers', async (req, res) => {
+    try {
+        const session = driver.session();
+        const result = await session.run(`
+            MATCH (c:Customer)-[:owns]->(a:Account)-[t:transfers]->(:Account)
+            WITH c, collect(toFloat(t.amount)) AS amounts, avg(t.amount) AS avgAmount, stDev(t.amount) AS stdDev
+            UNWIND amounts AS amount
+            WITH c, avgAmount, stdDev, amount
+            WHERE amount > avgAmount + 2 * stdDev OR amount < avgAmount - 2 * stdDev
+            RETURN c.customerId AS customer, amount, avgAmount, stdDev
+            ORDER BY abs(amount - avgAmount) DESC
+            LIMIT 20
+        `);
+        await session.close();
+        res.json(result.records.map(record => record.toObject()));
+    } catch (error) {
+        console.error('Error in getAmountOutliers:', error);
+        res.status(500).json({ error: 'Error al buscar outliers por monto', details: error.message });
+    }
+});
+
+// Time Outliers
+router.get('/time-outliers', async (req, res) => {
+    try {
+        const session = driver.session();
+        const result = await session.run(`
+            MATCH (c:Customer)-[:owns]->(a:Account)-[t:transfers]->(:Account)
+            WITH c, t, 
+                 CASE 
+                    WHEN t.transactionDate CONTAINS 'T' 
+                    THEN datetime(t.transactionDate)
+                    ELSE datetime(replace(t.transactionDate, ' ', 'T'))
+                 END as dt
+            WITH c, t, dt.hour as txHour
+            WHERE txHour < 8 OR txHour > 20
+            RETURN 
+                c.customerId AS customer,
+                c.firstName + ' ' + c.lastName AS customerName,
+                t.amount AS amount,
+                t.transactionDate AS date,
+                txHour as hour
+            ORDER BY toFloat(t.amount) DESC
+            LIMIT 20
+        `);
+        await session.close();
+        res.json(result.records.map(record => record.toObject()));
+    } catch (error) {
+        console.error('Error in getTimeOutliers:', error);
+        res.status(500).json({ error: 'Error al buscar outliers por tiempo', details: error.message });
+    }
+});
+
+// Cascade Transfer Chains
+router.get('/cascade-chains', async (req, res) => {
+    try {
+        const session = driver.session();
+        const result = await session.run(`
+            MATCH path = (a:Account)-[:transfers*2..5]->(b:Account)
+            WHERE a <> b
+            WITH a, b, path, reduce(total = 0, rel IN relationships(path) | total + toFloat(rel.amount)) AS totalTransferred
+            RETURN a.accountNumber AS startAccount, b.accountNumber AS endAccount, totalTransferred, length(path) AS hops, nodes(path) AS accounts
+            ORDER BY totalTransferred DESC
+            LIMIT 10
+        `);
+        await session.close();
+        res.json(result.records.map(record => record.toObject()));
+    } catch (error) {
+        console.error('Error detallado:', error);
+        res.status(500).json({ error: 'Error al buscar cadenas de transferencias', details: error.message });
+    }
+});
+
+// High Risk Customers
+router.get('/high-risk-customers', async (req, res) => {
+    try {
+        const session = driver.session();
+        const result = await session.run(`
+            MATCH (c:Customer)
+            WHERE c.isHighRisk = true OR c.isVIP = true
+            RETURN c.customerId AS customer, c.firstName AS firstName, c.lastName AS lastName, c.email AS email
+            LIMIT 20
+        `);
+        await session.close();
+        res.json(result.records.map(record => record.toObject()));
+    } catch (error) {
+        console.error('Error detallado:', error);
+        res.status(500).json({ error: 'Error al buscar clientes de alto riesgo', details: error.message });
+    }
+});
+
+// Anomalous Customers
+router.get('/anomalous-customers', async (req, res) => {
+    try {
+        const session = driver.session();
+        const result = await session.run(`
+            MATCH (c:Customer)-[:owns]->(a:Account)-[t:transfers]->(:Account)
+            WITH c, count(t) AS txCount, 
+                 collect(toFloat(t.amount)) AS amounts,
+                 sum(toFloat(t.amount)) AS totalAmount
+            WITH c, txCount, amounts, totalAmount,
+                 reduce(sum = 0.0, x IN amounts | sum + x) / size(amounts) AS avgAmount
+            WITH c, txCount, totalAmount, avgAmount,
+                 reduce(
+                     variance = 0.0,
+                     x IN amounts |
+                     variance + (x - avgAmount) * (x - avgAmount)
+                 ) / size(amounts) AS variance
+            WHERE (txCount > 5 AND totalAmount > 5000) OR 
+                  (sqrt(variance) > avgAmount * 0.5)
+            RETURN 
+                c.customerId AS customer,
+                c.firstName + ' ' + c.lastName AS customerName,
+                txCount AS numberOfTransactions,
+                totalAmount,
+                avgAmount,
+                sqrt(variance) AS standardDeviation
+            ORDER BY totalAmount DESC, standardDeviation DESC
+            LIMIT 20
+        `);
+        await session.close();
+        res.json(result.records.map(record => record.toObject()));
+    } catch (error) {
+        console.error('Error detallado:', error);
+        res.status(500).json({ error: 'Error al buscar clientes anómalos', details: error.message });
+    }
+});
 
 module.exports = router;

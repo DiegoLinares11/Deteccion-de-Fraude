@@ -108,13 +108,133 @@ const getDeductionFraudRings = async (req, res) => {
   }
 };
 
+
+
 // Definimos getFraudRings como alias a la consulta con deducción, que es la más robusta
 const getFraudRings = getDeductionFraudRings;
+const getAmountOutliers = async (req, res) => {
+  const session = getSession();
+  try {
+    const query = `
+      MATCH (c:Customer)-[:owns]->(a:Account)-[t:transfers]->(:Account)
+      WITH c, collect(toFloat(t.amount)) AS amounts, avg(t.amount) AS avgAmount, stDev(t.amount) AS stdDev
+      UNWIND amounts AS amount
+      WITH c, avgAmount, stdDev, amount
+      WHERE amount > avgAmount + 2 * stdDev OR amount < avgAmount - 2 * stdDev
+      RETURN c.customerId AS customer, amount, avgAmount, stdDev
+      ORDER BY abs(amount - avgAmount) DESC
+      LIMIT 20
+    `;
+    const result = await session.run(query);
+    await session.close();
+    res.json(result.records.map(record => record.toObject()));
+  } catch (error) {
+    console.error('Error in getAmountOutliers:', error);
+    res.status(500).json({ error: 'Error al buscar outliers por monto', details: error.message });
+  }
+};
+const getTimeOutliers = async (req, res) => {
+  const session = getSession();
+  try {
+    const query = `
+      MATCH (c:Customer)-[:owns]->(a:Account)-[t:transfers]->(:Account)
+      WITH c, t, 
+           CASE 
+              WHEN t.transactionDate CONTAINS 'T' 
+              THEN datetime(t.transactionDate)
+              ELSE datetime(replace(t.transactionDate, ' ', 'T'))
+           END as dt
+      WITH c, t, dt.hour as txHour
+      WHERE txHour < 8 OR txHour > 20
+      RETURN 
+          c.customerId AS customer,
+          c.firstName + ' ' + c.lastName AS customerName,
+          t.amount AS amount,
+          t.transactionDate AS date,
+          txHour as hour
+      ORDER BY toFloat(t.amount) DESC
+      LIMIT 20
+    `;
+    const result = await session.run(query);
+    await session.close();
+    res.json(result.records.map(record => record.toObject()));
+  } catch (error) {
+    console.error("Error in getTimeOutliers:", error);
+    res.status(500).json({ error: "Error al buscar outliers por tiempo", details: error.message });
+  }
+};
+
+const getCascadeTransferChains = async (req, res) => {
+  const session = getSession();
+  try {
+    const query = `
+      MATCH path = (a:Account)-[:transfers*2..5]->(b:Account)
+      WHERE a <> b
+      WITH a, b, path, reduce(total = 0, rel IN relationships(path) | total + toFloat(rel.amount)) AS totalTransferred
+      RETURN a.accountNumber AS startAccount, b.accountNumber AS endAccount, totalTransferred, length(path) AS hops, nodes(path) AS accounts
+      ORDER BY totalTransferred DESC
+      LIMIT 10
+    `;
+    const result = await session.run(query);
+    const chains = result.records.map(record => record.toObject());
+    res.json({ count: chains.length, chains });
+  } catch (error) {
+    console.error("Error in getCascadeTransferChains:", error);
+    res.status(500).json({ error: "Internal server error" });
+  } finally {
+    await session.close();
+  }
+};
+const getHighRiskCustomers = async (req, res) => {
+  const session = getSession();
+  try {
+    const query = `
+      MATCH (c:Customer)
+      WHERE c.isHighRisk = true OR c.isVIP = true
+      RETURN c.customerId AS customer, c.firstName AS firstName, c.lastName AS lastName, c.email AS email
+      LIMIT 20
+    `;
+    const result = await session.run(query);
+    const customers = result.records.map(record => record.toObject());
+    res.json({ count: customers.length, customers });
+  } catch (error) {
+    console.error("Error in getHighRiskCustomers:", error);
+    res.status(500).json({ error: "Internal server error" });
+  } finally {
+    await session.close();
+  }
+};
+const getAnomalousCustomers = async (req, res) => {
+  const session = getSession();
+  try {
+    const query = `
+      MATCH (c:Customer)-[:owns]->(a:Account)-[t:transfers]->(:Account)
+      WITH c, count(t) AS txCount, sum(toFloat(t.amount)) AS totalAmount
+      WHERE txCount > 10 AND totalAmount > 10000
+      RETURN c.customerId AS customer, c.firstName AS firstName, c.lastName AS lastName, txCount, totalAmount
+      ORDER BY totalAmount DESC
+      LIMIT 10
+    `;
+    const result = await session.run(query);
+    const customers = result.records.map(record => record.toObject());
+    res.json({ count: customers.length, customers });
+  } catch (error) {
+    console.error("Error in getAnomalousCustomers:", error);
+    res.status(500).json({ error: "Internal server error" });
+  } finally {
+    await session.close();
+  }
+};
 
 module.exports = {
   getSimpleFraudRings,
   getUniqueFraudRings,
   getChronologicalFraudRings,
   getDeductionFraudRings,
-  getFraudRings
+  getFraudRings,  // alias a getDeductionFraudRings
+  getAmountOutliers,
+  getTimeOutliers,
+  getCascadeTransferChains,
+  getHighRiskCustomers,
+  getAnomalousCustomers
 };

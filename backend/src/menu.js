@@ -123,52 +123,62 @@ const analyticMenu = () => {
   console.log('2. Fraud Rings - Simple');
   console.log('3. Fraud Rings - Único (sin duplicados)');
   console.log('4. Fraud Rings - Cronológico');
-  console.log('5. Volver al menú principal');
+  console.log('5. Outliers por Monto');
+  console.log('6. Outliers por Tiempo');
+  console.log('7. Cadenas de Transferencias');
+  console.log('8. Clientes de Alto Riesgo');
+  console.log('9. Clientes Anómalos');
+  console.log('10. Volver al menú principal');
   
-  rl.question('\nSeleccione una opción (1-5): ', async (option) => {
+  rl.question('\nSeleccione una opción (1-10): ', async (option) => {
     try {
       let response;
       switch(option) {
         case '1':
           response = await axios.get('http://localhost:3000/api/analytics/fraud-rings/robust');
-          if (response.data.length === 0) {
-            console.log('⚠️ No se encontraron resultados. Verifica que existan:');
-            console.log('1. Clientes en la base de datos');
-            console.log('2. Cuentas asociadas a los clientes');
-            console.log('3. Transferencias entre cuentas');
-          } else {
-            console.table(response.data);
-          }
+          console.table(response.data);
           break;
         case '2':
           response = await axios.get('http://localhost:3000/api/analytics/fraud-rings/simple');
-          if (response.data.length === 0) {
-            console.log('⚠️ No se encontraron resultados. Verifica que existan transferencias entre cuentas.');
-          } else {
-            console.table(response.data);
-          }
+          console.table(response.data);
           break;
         case '3':
           response = await axios.get('http://localhost:3000/api/analytics/fraud-rings/unique');
-          if (response.data.length === 0) {
-            console.log('⚠️ No se encontraron resultados. Verifica que existan transferencias únicas entre clientes.');
-          } else {
-            console.table(response.data);
-          }
+          console.table(response.data);
           break;
         case '4':
           response = await axios.get('http://localhost:3000/api/analytics/fraud-rings/chronological');
-          if (response.data.length === 0) {
-            console.log('⚠️ No se encontraron resultados. Verifica que existan transferencias con timestamps.');
-          } else {
-            console.table(response.data);
-          }
+          console.table(response.data);
           break;
         case '5':
+          response = await axios.get('http://localhost:3000/api/analytics/amount-outliers');
+          console.table(response.data);
+          break;
+        case '6':
+          response = await axios.get('http://localhost:3000/api/analytics/time-outliers');
+          console.table(response.data);
+          break;
+        case '7':
+          response = await axios.get('http://localhost:3000/api/analytics/cascade-chains');
+          console.table(response.data);
+          break;
+        case '8':
+          response = await axios.get('http://localhost:3000/api/analytics/high-risk-customers');
+          console.table(response.data);
+          break;
+        case '9':
+          response = await axios.get('http://localhost:3000/api/analytics/anomalous-customers');
+          console.table(response.data);
+          break;
+        case '10':
           mainMenu();
           return;
         default:
           console.log('❌ Opción inválida');
+      }
+      
+      if (response && response.data.length === 0) {
+        console.log('⚠️ No se encontraron resultados. Verifica que existan datos en la base de datos.');
       }
     } catch (error) {
       console.log('❌ Error en la consulta de analítica:', error.message);
