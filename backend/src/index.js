@@ -19,6 +19,15 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  if (req.method === 'DELETE') {
+    express.json()(req, res, next); 
+  } else {
+    next();
+  }
+});
+
+
 // Ruta de verificación
 app.get('/', (req, res) => {
   res.json({
