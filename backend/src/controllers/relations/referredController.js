@@ -4,7 +4,7 @@ const { getSession } = require('../../utils/neo4j');
 const createReferredRelation = async (req, res) => {
   const session = getSession();
   try {
-    const { referrerId, referredId, referralCode, bonusAmount } = req.body;
+    const { referrerId, referredId, bonusAmount } = req.body;
 
     // Validar existencia de clientes
     const checkReferrer = await session.run(
@@ -36,11 +36,10 @@ const createReferredRelation = async (req, res) => {
     const result = await session.run(
       `MATCH (c1:Customer {customerId: $referrerId}), (c2:Customer {customerId: $referredId})
        CREATE (c1)-[r:referred]->(c2)
-       SET r.referralCode = $referralCode,
-           r.referralDate = datetime(),
+       SET r.referralDate = datetime(),
            r.bonusAmount = $bonusAmount
        RETURN r`,
-      { referrerId, referredId, referralCode, bonusAmount: parseFloat(bonusAmount) }
+      { referrerId, referredId, bonusAmount: parseFloat(bonusAmount) }
     );
 
     const relationship = result.records[0].get('r').properties;
@@ -87,13 +86,13 @@ const getReferredRelations = async (req, res) => {
 const updateReferredBonus = async (req, res) => {
   const session = getSession();
   try {
-    const { referrerId, referredId, newBonusAmount } = req.body;
+    const { referrerId, referredId, bonusAmount } = req.body;
     
     const result = await session.run(
       `MATCH (c1:Customer {customerId: $referrerId})-[r:referred]->(c2:Customer {customerId: $referredId})
-       SET r.bonusAmount = $newBonusAmount
+       SET r.bonusAmount = $bonusAmount
        RETURN r`,
-      { referrerId, referredId, newBonusAmount: parseFloat(newBonusAmount) }
+      { referrerId, referredId, bonusAmount: parseFloat(bonusAmount) }
     );
 
     if (result.records.length === 0) {

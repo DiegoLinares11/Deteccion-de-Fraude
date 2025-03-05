@@ -305,11 +305,13 @@ const getRelationsForEntity = (entity) => {
         params: ["customerId1", "customerId2", "trustLevel", "since"],
       },
       {
-        name: "REFERRED",
-        endpoint: "referred",
-        description: "Cliente → Cliente (Referido)",
-        entity: "customers",
-        params: ["referrerId", "referredId", "referralDate"],
+
+        name: 'REFERRED',
+        endpoint: 'referred',
+        description: 'Cliente → Cliente (Referido)',
+        entity: 'customers',
+        params: ['referrerId', 'referredId', 'bonusAmount'],
+        updateParams: ['bonusAmount']
       },
       {
         name: "SERVICED_BY",
@@ -419,24 +421,27 @@ const createEntity = async (entity) => {
       { field: "currency", text: "Moneda (USD/EUR/GTQ): " },
     ],
     devices: [
-      { field: "deviceId", text: "ID del dispositivo: " },
-      {
-        field: "deviceType",
-        text: "Tipo de dispositivo (Mobile/Desktop/Tablet): ",
-      },
-      { field: "os", text: "Sistema operativo (Android/iOS/Windows): " },
+
+      { field: 'deviceId', text: 'ID del dispositivo: ' },
+      { field: 'deviceType', text: 'Tipo de dispositivo (Mobile/Desktop/Tablet): ' },
+      { field: 'os', text: 'Sistema operativo (Android/iOS/Windows): ' },
+      { field: 'ipAddress', text: 'Ejemplo de ip: 192.0.0.1 : ' }
     ],
     locations: [
-      { field: "locationId", text: "ID de la ubicación: " },
-      { field: "address", text: "Dirección: " },
-      { field: "city", text: "Ciudad: " },
-      { field: "country", text: "País: " },
+      { field: 'locationId', text: 'ID de la ubicación: ' },
+      { field: 'city', text: 'Ciudad: ' },
+      { field: 'country', text: 'País: ' },
+      { field: 'latitude', text: 'Latitud: ' },
+      { field: 'longitude', text: 'Longitud: ' }
     ],
     branches: [
-      { field: "branchId", text: "ID de la sucursal: " },
-      { field: "name", text: "Nombre: " },
-      { field: "manager", text: "Gerente: " },
-    ],
+      { field: 'branchCode', text: 'Código de la sucursal: ' },
+      { field: 'name', text: 'Nombre: ' },
+      { field: 'address', text: 'Dirección: ' },
+      { field: 'openHours', text: 'Horario: ' },
+      { field: 'establishedYear', text: 'Año de fundación: ' },
+      { field: 'managerName', text: 'Gerente: ' }
+    ]
   };
 
   const inputs = {};

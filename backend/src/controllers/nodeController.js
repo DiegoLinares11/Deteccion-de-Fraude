@@ -75,5 +75,5 @@ const deletePropertiesFromNode = async (req, res) => {
 module.exports = {
     addPropertiesToNode,
     updatePropertiesInNode,
-    deletePropertiesFromNode
+    deletePropertiesFromNode    
 }
