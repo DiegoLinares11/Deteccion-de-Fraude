@@ -17,9 +17,6 @@ const mainMenu = () => {
   console.log("4. Ubicaciones (Location)");
   console.log("5. Sucursales (Branch)");
   console.log("6. Analítica (Detección de Fraude)");
-  /* The above code is a JavaScript comment that includes a console log statement printing '7. Analítica
-(Detección de Fraude)'. This code is not executable and serves as a way to document or provide
-information about the code. */
   console.log("7.Salir ");
 
   rl.question("\nSeleccione una opción (1-7): ", (option) => {
@@ -288,21 +285,26 @@ const getRelationsForEntity = (entity) => {
         endpoint: "owns",
         description: "Cliente → Cuenta",
         entity: "customers",
-        params: ["customerId", "accountNumber", "since", "sharePercentage"],
+        params: ['customerId', 'accountNumber', 'since', 'sharePercentage'],
+        updateParams: ['sharePercentage'] // Solo se puede actualizar esto
       },
       {
         name: "USES",
         endpoint: "uses",
         description: "Cliente → Dispositivo",
         entity: "customers",
-        params: ["customerId", "deviceId", "lastAccessed", "ipAddress"],
+        params: ['customerId', 'deviceId', 'lastAccessed', 'ipAddress'],
+        updateParams: ['lastAccessed', 'ipAddress']
+      
       },
       {
         name: "TRUSTS",
         endpoint: "trusts",
         description: "Cliente → Cliente (Relación de confianza)",
         entity: "customers",
-        params: ["customerId1", "customerId2", "trustLevel", "since"],
+        params: ['customerId1', 'customerId2', 'trustLevel'],
+        updateParams: ['trustLevel']
+      
       },
       {
 
@@ -315,17 +317,19 @@ const getRelationsForEntity = (entity) => {
       },
       {
         name: "SERVICED_BY",
-        endpoint: "serviced_by",
+        endpoint: "servicedby",
         description: "Cliente → Sucursal",
         entity: "customers",
-        params: ["customerId", "branchId", "serviceDate"],
+        params: ['customerId', 'branchId', 'serviceDate', 'feedbackScore'],
+        updateParams: ['feedbackScore']
       },
       {
         name: "RESIDES_IN",
-        endpoint: "resides_in",
+        endpoint: "residesin",
         description: "Cliente → Ubicación (Residencia)",
         entity: "customers",
-        params: ["customerId", "locationId", "since"],
+        params: ['customerId', 'locationId', 'since', 'verificationStatus'],
+        updateParams: ['verificationStatus'] 
       },
     ],
     accounts: [
@@ -334,67 +338,63 @@ const getRelationsForEntity = (entity) => {
         endpoint: "transfers",
         description: "Cuenta → Cuenta (Transacciones)",
         entity: "accounts",
-        params: [
-          "sourceAccount",
-          "targetAccount",
-          "amount",
-          "currency",
-          "isInternational",
-        ],
+        params: ['sourceAccount', 'targetAccount', 'amount', 'currency', 'isInternational'],
+        updateParams: ['amount', 'currency']
+        
       },
       {
         name: "CONNECTED_VIA",
-        endpoint: "connected_via",
+        endpoint: "connectedvia",
         description: "Cuenta → Dispositivo",
         entity: "accounts",
-        params: [
-          "accountNumber",
-          "deviceId",
-          "lastUsed",
-          "frequency",
-          "isVerified",
-        ],
+        params: ['accountNumber', 'deviceId', 'lastUsed', 'frequency', 'isVerified'],
+        updateParams: ['frequency', 'isVerified']
       },
       {
         name: "OPERATES_AT",
-        endpoint: "operates_at",
+        endpoint: "operatesat",  
         description: "Cuenta → Sucursal",
         entity: "accounts",
-        params: ["accountNumber", "branchCode", "openHours"],
+        params: ['accountNumber', 'branchCode', 'openHours'],
+        updateParams: ['openHours']
       },
       {
         name: "LINKED_TO",
-        endpoint: "linked_to",
+        endpoint: "linkedto",
         description: "Cuenta → Cuenta (Enlace)",
         entity: "accounts",
-        params: ["accountNumber1", "accountNumber2", "linkType"],
+        params: ['accountNumber1', 'accountNumber2', 'linkType'],
+        updateParams: ['linkType']
       },
     ],
     devices: [
       {
         name: "LOCATED_AT",
-        endpoint: "located_at",
+        endpoint: "locatedat",
         description: "Dispositivo → Ubicación",
         entity: "devices",
-        params: ["deviceId", "locationId", "coordinates"],
+        params: ['deviceId', 'locationId', 'coordinates', 'accuracy'],
+        updateParams: ['coordinates', 'accuracy']
       },
     ],
     locations: [
       {
         name: "LOCATED_AT",
-        endpoint: "located_at",
+        endpoint: "locatedat",
         description: "Dispositivo → Ubicación",
         entity: "locations",
-        params: ["deviceId", "locationId", "coordinates"],
+        params: ['deviceId', 'locationId', 'coordinates', 'accuracy'],
+        updateParams: ['coordinates', 'accuracy']
       },
     ],
     branches: [
       {
         name: "LOCATED_IN",
-        endpoint: "located_in",
+        endpoint: "locatedin",
         description: "Sucursal → Ubicación",
         entity: "branches",
-        params: ["branchId", "locationId"],
+        params: ['branchId', 'locationId', 'branchArea', 'geoAccuracy'],
+        updateParams: ['branchArea', 'geoAccuracy']
       },
     ],
   };
