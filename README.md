@@ -29,7 +29,7 @@ sudo pacman -S pyenv
 
 Añadir lo siguiente a tu archivo de configuración del shell:
 
-    Bash (~/.bashrc):
+    nano ~/.bashrc
 ```bash
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
